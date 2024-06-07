@@ -27,8 +27,27 @@ const resolvers = {
       }
       const token = signToken(user)
       return {user, token}
+    },
+    saveBook: async (parent, {bookData}, context) => {
+      if (context.user) {
+        const updateUser = await User.findByIdAndUpdate({ _id: context.user._id },
+          { $push: { savedBooks: bookData } },
+          { new: true })
+        return updateUser
+      }
+      throw AuthError
+    },
+    removeBook: async (parent, {bookId}, context) => {
+      if (context.user) {
+        const updateUser = await User.findByIdAndUpdate({ _id: context.user._id },
+          { $pull: { savedBooks: {bookId} } },
+          { new: true })
+        return updateUser
+      }
+      throw AuthError
+
     }
-    
+
   }
 };
 
